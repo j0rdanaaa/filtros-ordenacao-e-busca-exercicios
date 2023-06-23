@@ -21,6 +21,8 @@ const CardsContainer = styled.div`
 function App() {
   const [pesquisa, setPesquisa] = useState("");
   const [idFilter, setIdFilter] = useState("");
+  const [typeSelected, setTypeSelected] = useState("");
+  const [orderSelected, setOrderSelected] = useState("order");
 
   return (
     <>
@@ -30,14 +32,48 @@ function App() {
         setIdFilter={setIdFilter}
         pesquisa={pesquisa}
         setPesquisa={setPesquisa}
+        typeSelected={typeSelected}
+        setTypeSelected={setTypeSelected}
+        orderSelected={orderSelected}
+        setOrderSelected={setOrderSelected}
       />
       <CardsContainer>
-        {pokemons.filter((pokemon) => {
-          return idFilter ? pokemon.id.includes(idFilter) : pokemon
-        })
+        {pokemons
           .filter((pokemon) => {
-            return pokemon.name.english.toLowerCase().includes(pesquisa.toLowerCase());
+            return idFilter ? pokemon.id.includes(idFilter) : pokemon;
           })
+
+          .filter((pokemon) => {
+            return pokemon.name.english
+              .toLocaleLowerCase()
+              .includes(pesquisa.toLowerCase());
+          })
+
+          .filter((pokemon) => {
+            if (
+              pokemon.type[0] === typeSelected ||
+              pokemon.type[1] === typeSelected
+            ) {
+              return true;
+            } else if (!typeSelected) {
+              return pokemons;
+            }
+          })
+
+          .sort((currentPokemon, nextPokemon) => {
+            if (orderSelected === "asc") {
+              return currentPokemon.name.english.localeCompare(
+                nextPokemon.name.english
+              );
+            } else if (orderSelected === "desc") {
+              return nextPokemon.name.english.localeCompare(
+                currentPokemon.name.english
+              );
+            } else {
+              return "order";
+            }
+          })
+
           .map((pokemon) => {
             return (
               <PokemonCard
